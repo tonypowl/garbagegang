@@ -1,46 +1,163 @@
-# Getting Started with Create React App
+# GarbageGang 🗑️
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Community-driven garbage mapping platform for cleaner neighborhoods. Upload images of garbage with live location to create heatmaps for cleanup planning.
 
-## Available Scripts
+## 🌟 Features
 
-In the project directory, you can run:
+- **📷 Image Upload with Geolocation**: Upload garbage images with automatic location capture
+- **🗺️ Interactive Heatmap**: Visualize garbage concentration across your city
+- **📊 Dataset Dashboard**: View all submitted reports with images and coordinates
+- **🌱 Green Theme**: Eco-friendly design with smooth animations
 
-### `npm start`
+## 🏗️ Project Structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+garbagegang/
+├── backend/              # Node.js + Express API
+│   ├── server.js        # Express server with file uploads
+│   ├── db.js            # SQLite database setup
+│   ├── uploads/         # Uploaded images storage
+│   └── data.sqlite      # SQLite database file
+├── src/                 # React frontend
+│   ├── components/      # React components
+│   │   ├── Navbar.tsx
+│   │   ├── Footer.tsx
+│   │   └── ReportForm.tsx
+│   └── pages/           # Page components
+│       ├── Home.tsx
+│       ├── MapPage.tsx  # Interactive map with heatmap
+│       ├── Dataset.tsx  # Reports gallery
+│       └── About.tsx
+└── public/
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🚀 Quick Start
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js (v14 or higher)
+- npm
 
-### `npm run build`
+### Installation & Running
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### 1. Install Dependencies
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Backend:**
+```bash
+cd backend
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Frontend:**
+```bash
+npm install
+```
 
-### `npm run eject`
+#### 2. Start the Backend Server
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+cd backend
+npm run dev
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Backend will run on `http://localhost:4000`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+#### 3. Start the Frontend (in a new terminal)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm start
+```
 
-## Learn More
+Frontend will run on `http://localhost:3000`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 📱 Usage
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. **Navigate to Local Map** page
+2. Click **"Report Garbage"** button
+3. Choose an image from your device
+4. Click **"Upload with Live Location"**
+5. Allow location access when prompted
+6. View your report on the map and in the Dataset tab
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Express.js** - Web framework
+- **Better-SQLite3** - Fast, embedded database
+- **Multer** - File upload handling
+- **CORS** - Cross-origin resource sharing
+
+### Frontend
+- **React** - UI framework
+- **TypeScript** - Type safety
+- **React Router** - Navigation
+- **Leaflet** - Interactive maps
+- **Leaflet.heat** - Heatmap visualization
+
+## 📊 API Endpoints
+
+### `POST /api/report`
+Upload a new garbage report with image and location.
+
+**Request:**
+- Form-data with `image` (file), `lat` (number), `lng` (number)
+
+**Response:**
+```json
+{
+  "id": 1,
+  "filename": "garbage-1234567890.jpg",
+  "lat": 12.9716,
+  "lng": 77.5946,
+  "message": "Report submitted successfully"
+}
+```
+
+### `GET /api/reports`
+Fetch all garbage reports.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "filename": "garbage-1234567890.jpg",
+    "url": "http://localhost:4000/uploads/garbage-1234567890.jpg",
+    "lat": 12.9716,
+    "lng": 77.5946,
+    "created_at": "2026-02-07T10:30:00.000Z"
+  }
+]
+```
+
+### `GET /api/reports/:id`
+Fetch a specific report by ID.
+
+## 🎨 Color Palette
+
+- Primary Green: `#2e8b57`
+- Dark Green: `#1a5a36`
+- Light Green: `#e8f8ef`
+- Background: `#f0fff4`
+
+## 🔮 Future Enhancements
+
+- [ ] User authentication and profiles
+- [ ] Admin dashboard for cleanup coordination
+- [ ] Email notifications for nearby reports
+- [ ] Mobile app (React Native)
+- [ ] ML-based garbage classification
+- [ ] Community cleanup event scheduling
+- [ ] Gamification with leaderboards
+
+## 📝 License
+
+MIT License - feel free to use this for your community!
+
+## 🤝 Contributing
+
+Contributions welcome! Open issues or submit PRs.
+
+---
+
+**Made with 💚 for cleaner neighborhoods**

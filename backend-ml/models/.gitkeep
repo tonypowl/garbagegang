@@ -1,0 +1,3 @@
+# Place your trained YOLOv11 model here as best.pt
+# Download from Google Drive and copy to: backend-ml/models/best.pt
+# This file is gitignored — the model is NOT committed to the repo

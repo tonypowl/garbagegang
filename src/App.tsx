@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import MapPage from './pages/MapPage';
+import About from './pages/About';
+import Dataset from './pages/Dataset';
+import API_BASE from './config';
 
 function App() {
+  // Silent ping on load — wakes Render from cold start before user interacts
+  useEffect(() => {
+    fetch(`${API_BASE}/docs`).catch(() => {});
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/dataset" element={<Dataset />} />
+        </Routes>
+      </main>
+      <Footer />
+    </>
   );
 }
 

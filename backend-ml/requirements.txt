@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+ultralytics
+pillow
+python-multipart
+httpx
+psycopg2-binary
+twilio
+python-dotenv
