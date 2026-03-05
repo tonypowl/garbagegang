@@ -247,32 +247,12 @@
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .whatsapp-card {
     padding: 2rem 1.5rem;
   }
-}
-@media (max-width: 768px) {
-  .map-title {
-    font-size: 2rem;
-  }
 
-  .map-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .report-toggle-btn {
-    width: 100%;
-  }
-
-  .map-wrapper {
-    height: 450px;
-  }
-
-  .map-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .map-filters {
+    gap: 6px;
   }
 }
