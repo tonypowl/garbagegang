@@ -1,21 +1,9 @@
-# backend-ml/database.py
-# Database connection factory.
-# Uses PostgreSQL via psycopg2. Credentials come from DATABASE_URL in .env.
-# Import get_conn() wherever a DB connection is needed.
-
 import os
+from contextlib import contextmanager
 import psycopg2
 import psycopg2.extras
 
-# NOTE: DATABASE_URL is intentionally read inside get_conn() at call time,
-# not at module import time — so load_dotenv() in main.py runs first.
-
 def get_conn() -> psycopg2.extensions.connection:
-    """
-    Return a psycopg2 connection.
-    RealDictCursor makes rows behave like plain dicts — same as sqlite3.Row.
-    DATABASE_URL is read here (not at import time) so load_dotenv() in main.py runs first.
-    """
     database_url = os.getenv("DATABASE_URL", "")
     if not database_url:
         raise RuntimeError(
@@ -23,3 +11,27 @@ def get_conn() -> psycopg2.extensions.connection:
             "Copy backend-ml/.env.example → .env and fill in your Supabase connection string."
         )
     return psycopg2.connect(database_url, cursor_factory=psycopg2.extras.RealDictCursor)
+
+
+@contextmanager
+def db_conn():
+    """
+    Context manager for safe DB access.
+    - Auto-commits on success
+    - Rolls back on exception
+    - Always closes the connection (no leak even if the route raises)
+
+    Usage:
+        with db_conn() as conn:
+            cur = conn.cursor()
+            cur.execute(...)
+    """
+    conn = get_conn()
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()

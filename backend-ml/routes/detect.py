@@ -20,7 +20,7 @@ async def detect(file: UploadFile = File(...)):
         )
     contents = await file.read()
     img = Image.open(io.BytesIO(contents)).convert("RGB")
-    res = ml_model.model.predict(img, conf=0.25)[0]
+    res = ml_model.model.predict(img, conf=0.45)[0]
 
     boxes = [
         {

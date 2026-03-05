@@ -15,14 +15,12 @@ from PIL import Image
 import io, json, uuid, httpx
 
 import ml_model
-from config import TWILIO_SID, TWILIO_TOKEN, MAP_URL, UPLOAD_DIR
-from database import get_conn
+from config import TWILIO_SID, TWILIO_TOKEN, UPLOAD_DIR
+from database import db_conn
 from storage import upload_image
 
 router = APIRouter()
 
-# In-memory conversation state keyed by "whatsapp:+91xxxxxxxxxx"
-# Fine for sandbox/testing; swap for Redis if you need multi-process persistence
 _convs: dict[str, dict] = {}
 
 
@@ -70,7 +68,7 @@ async def whatsapp_webhook(request: Request):
             return Response(content=str(resp), media_type="application/xml")
 
         img   = Image.open(io.BytesIO(img_bytes)).convert("RGB")
-        res   = ml_model.model.predict(img, conf=0.25)[0]
+        res   = ml_model.model.predict(img, conf=0.45)[0]
         count = len(res.boxes)
 
         if count == 0:
@@ -125,8 +123,7 @@ async def whatsapp_webhook(request: Request):
             resp.message(
                 "👋 Hi! I'm *GarbageGang Bot*.\n\n"
                 "📸 Send me a *photo* of an illegal dump site and I'll detect "
-                "the trash and log it on our public map!\n\n"
-                f"🗺️ View live map: {MAP_URL}"
+                "the trash and log it on our public map!"
             )
 
     # ── Branch 4: nothing matched — show greeting ─────────────────────────
@@ -134,8 +131,7 @@ async def whatsapp_webhook(request: Request):
         resp.message(
             "👋 Hi! I'm *GarbageGang Bot*.\n\n"
             "📸 Send me a *photo* of an illegal dump site and I'll detect "
-            "the trash and log it on our public map!\n\n"
-            f"🗺️ View live map: {MAP_URL}"
+            "the trash and log it on our public map!"
         )
 
     return Response(content=str(resp), media_type="application/xml")
@@ -187,7 +183,7 @@ async def _save_wa_report(
         count = max(conv.get("count", 1), 1)
     else:
         img   = Image.open(io.BytesIO(file_bytes)).convert("RGB")
-        res   = ml_model.model.predict(img, conf=0.25)[0]
+        res   = ml_model.model.predict(img, conf=0.45)[0]
         boxes = [b.xyxy[0].tolist() for b in res.boxes]
         count = len(boxes)
         if not boxes:
@@ -203,27 +199,24 @@ async def _save_wa_report(
         image_path = fname  # served via /uploads/<fname>
 
     report_id = str(uuid.uuid4())
-    conn      = get_conn()
-    cur       = conn.cursor()
-    cur.execute(
-        "INSERT INTO reports (id, image_path, lat, lng, address, detections, count, created_at, description)"
-        " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-        (
-            report_id, image_path, lat, lng,
-            address.strip() or None,
-            json.dumps(boxes), count,
-            datetime.now(timezone.utc).isoformat(),
-            description or None,
-        ),
-    )
-    conn.commit()
-    cur.close()
-    conn.close()
+    with db_conn() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO reports (id, image_path, lat, lng, address, detections, count, created_at, description)"
+            " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+                report_id, image_path, lat, lng,
+                address.strip() or None,
+                json.dumps(boxes), count,
+                datetime.now(timezone.utc).isoformat(),
+                description or None,
+            ),
+        )
     _convs.pop(from_number, None)
 
     loc_str = address or f"{lat:.4f}, {lng:.4f}"
     resp.message(
         f"✅ *Report saved!* {count} item{'s' if count != 1 else ''} logged at _{loc_str}_."
         + (f"\n📝 _{description}_" if description else "")
-        + f"\n\n🗺️ See it live: {MAP_URL} 🌱\nThank you for keeping streets clean!"
+        + "\n\n🌱 Thank you for helping keep streets clean!"
     )
