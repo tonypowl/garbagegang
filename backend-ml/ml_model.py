@@ -14,9 +14,9 @@ def load_model() -> None:
     global model
     model_path = Path("models/best.pt")
     if not model_path.exists():
-        print("⚠️  WARNING: models/best.pt not found — /detect and /reports will return 503.")
+        print("!!!!!WARNING: models/best.pt not found!!!!!")
         print("   Place your trained model at backend-ml/models/best.pt to enable detection.")
         model = None
         return
     model = YOLO(str(model_path))
-    print("✅ YOLO model loaded.")
+    print("- - - - - YOLO model loaded - - - - ")

@@ -1,68 +1,87 @@
-# GarbageGang (LOCAL ONLY FOR NOW) 
+# GarbageGang
 
-Community-driven garbage mapping platform for cleaner neighborhoods. Upload images of garbage with live location to create heatmaps for cleanup planning.
+Community-driven waste mapping platform for Bengaluru. Send a photo of illegal dumping via WhatsApp — a YOLOv11 model detects the trash, and confirmed reports appear as live markers on an interactive Leaflet map.
 
-## Proposed Features
+## Features
 
-- **Image Upload with Geolocation**: Upload garbage images with automatic location capture
-- **Interactive Heatmap**: Visualize garbage concentration across your city
-- **Dataset Dashboard**: View all submitted reports with images and coordinates
+- **WhatsApp reporting** — photo → YOLO detection → location → saved to Supabase
+- **Live map** — clustered emoji markers, heatmap overlay, 369 GBA ward boundaries
+- **Auto-geocoding** — typed addresses resolved via Nominatim (no API key needed)
+- **Supabase backend** — images stored in Supabase Storage, reports in PostgreSQL
 
 ## Project Structure
 
 ```
 garbagegang/
-├── backend/              # Node.js + Express API
-│   ├── server.js        # Express server with file uploads
-│   ├── db.js            # SQLite database setup
-│   ├── uploads/         # Uploaded images storage
-│   └── data.sqlite      # SQLite database file
-├── src/                 # React frontend
-│   ├── components/      # React components
+├── backend-ml/                  # Python FastAPI backend
+│   ├── main.py                  # App entry point, /health endpoint
+│   ├── config.py                # Env vars (Twilio, Supabase, upload dir)
+│   ├── database.py              # psycopg2 connection + db_conn() context manager
+│   ├── ml_model.py              # YOLOv11 singleton, load_model()
+│   ├── storage.py               # Supabase image upload, local disk fallback
+│   ├── requirements.txt
+│   ├── .env                     # Local secrets — never commit
+│   ├── models/
+│   │   └── best.pt              # Trained YOLOv11 model
+│   ├── uploads/                 # Local image fallback (auto-created)
+│   └── routes/
+│       ├── detect.py            # POST /detect — stateless YOLO inference
+│       ├── reports.py           # POST /reports, GET /reports
+│       ├── geocode.py           # GET /geocode — Nominatim proxy
+│       └── whatsapp.py          # POST /whatsapp — Twilio webhook
+│
+├── src/                         # React + TypeScript frontend
+│   ├── App.tsx                  # Router shell, cold-start ping
+│   ├── config.ts                # API_BASE URL (single source of truth)
+│   ├── components/
 │   │   ├── Navbar.tsx
-│   │   ├── Footer.tsx
-│   │   └── ReportForm.tsx
-│   └── pages/           # Page components
-│       ├── Home.tsx
-│       ├── MapPage.tsx  # Interactive map with heatmap
-│       ├── Dataset.tsx  # Reports gallery
-│       └── About.tsx
-└── public/
+│   │   └── Footer.tsx
+│   └── pages/
+│       ├── Home.tsx             # Hero + CTA
+│       ├── MapPage.tsx          # Live Leaflet map, polls /reports every 30s
+│       ├── About.tsx
+│       └── Dataset.tsx
+│
+├── public/
+│   ├── index.html
+│   └── wards.geojson            # 369 GBA ward boundaries for map overlay
+│
+├── notebooks/                   # Colab training notebooks
+├── dataset/                     # Not committed (see .gitignore)
+├── package.json
+└── tsconfig.json
 ```
 
+## Running Locally
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm
+- Python 3.10+ with a virtual environment
+- Node.js 18+
+- `best.pt` placed at `backend-ml/models/best.pt`
+- `backend-ml/.env` filled with Supabase + Twilio credentials
 
-### Installation & Running
-
-#### 1. Install Dependencies
-
-**Backend:**
-```bash
-cd backend
-npm install 
-```
-
-**Frontend:**
-```bash
-npm install
-```
-
-#### 2. Start the Backend Server
+### 1. Start the backend
 
 ```bash
+cd backend-ml
+source .venv/bin/activate
 uvicorn main:app --reload --port 8000
-ngrok http 8000 
 ```
 
-Backend will run on `http://localhost:8000`
+API docs available at `http://localhost:8000/docs`
 
-#### 3. Start the Frontend (in a new terminal)
+### 2. Start ngrok (for WhatsApp webhook)
+
+```bash
+ngrok http 8000
+```
+
+Paste the `https://` URL into the Twilio sandbox webhook field as `https://xxxx.ngrok.io/whatsapp`
+
+### 3. Start the frontend
 
 ```bash
 npm start
 ```
 
-Frontend will run on `http://localhost:3000`
+Frontend runs at `http://localhost:3000`

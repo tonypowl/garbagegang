@@ -1,12 +1,5 @@
-# backend-ml/routes/whatsapp.py
 # POST /whatsapp — Twilio WhatsApp sandbox webhook.
-# Conversation flow:  photo → description → location → saved report
-#
-# Setup:
-#   1. Sign up free at https://twilio.com
-#   2. Messaging → Try it out → Send a WhatsApp message
-#   3. Set webhook URL: https://<ngrok-url>/whatsapp
-#   4. Run ngrok: ngrok http 8000
+# flow:  photo → description → location → saved report
 
 from fastapi import APIRouter, Request, Response
 from twilio.twiml.messaging_response import MessagingResponse

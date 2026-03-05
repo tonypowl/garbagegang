@@ -1,4 +1,3 @@
-# backend-ml/routes/reports.py
 # POST /reports        — chatbot-confirmed submission (requires YOLO model)
 # GET  /reports        — fetch all reports for the map
 

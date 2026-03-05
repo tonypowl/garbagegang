@@ -1,4 +1,3 @@
-# backend-ml/routes/detect.py
 # POST /detect — stateless image detection.
 # Reads image into memory, runs YOLO, returns bounding boxes. Nothing is saved to disk or DB.
 
