@@ -1,4 +1,4 @@
-# GarbageGang (LOCAL ONLY FOR NOW) lil nig
+# GarbageGang (LOCAL ONLY FOR NOW) 
 
 Community-driven garbage mapping platform for cleaner neighborhoods. Upload images of garbage with live location to create heatmaps for cleanup planning.
 
