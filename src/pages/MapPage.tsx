@@ -1,6 +1,6 @@
 // src/pages/MapPage.tsx
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, useMap, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap, GeoJSON, LayersControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
@@ -286,16 +286,40 @@ const MapPage: React.FC = () => {
             zoomControl={true}
             scrollWheelZoom={true}
           >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            />
-            
-            <BangaloreZonesLayer />
-            <MapController center={center} enabled={hasCenteredRef.current} />
-            <HeatmapLayer reports={reports} />
+            <LayersControl position="topright">
+              {/* Base tile layers */}
+              <LayersControl.BaseLayer checked name="OpenStreetMap Standard">
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                />
+              </LayersControl.BaseLayer>
+              <LayersControl.BaseLayer name="CartoDB Light">
+                <TileLayer
+                  attribution='&copy; <a href="https://carto.com">CARTO</a>'
+                  url='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+                />
+              </LayersControl.BaseLayer>
+              <LayersControl.BaseLayer name="CartoDB Dark">
+                <TileLayer
+                  attribution='&copy; <a href="https://carto.com">CARTO</a>'
+                  url='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                />
+              </LayersControl.BaseLayer>
 
-            <ClusteredReportMarkers reports={reports} />
+              {/* Overlay layers */}
+              <LayersControl.Overlay checked name="Wards">
+                <BangaloreZonesLayer />
+              </LayersControl.Overlay>
+              <LayersControl.Overlay checked name="Trash Reports">
+                <ClusteredReportMarkers reports={reports} />
+              </LayersControl.Overlay>
+              <LayersControl.Overlay checked name="Heatmap">
+                <HeatmapLayer reports={reports} />
+              </LayersControl.Overlay>
+            </LayersControl>
+
+            <MapController center={center} enabled={hasCenteredRef.current} />
           </MapContainer>
         </div>
 
