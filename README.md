@@ -1,4 +1,4 @@
-# GarbageGang
+# GarbageGang (LOCALLY HOSTED)
 
 Community-driven waste mapping platform for Bengaluru. Send a photo of illegal dumping via WhatsApp — a YOLOv11 model detects the trash, and confirmed reports appear as live markers on an interactive Leaflet map.
 
